@@ -12,13 +12,15 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @Column(name = "id", nullable = false, length = 50)
-    private String id;
+    private String id = UUID.randomUUID().toString();
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)

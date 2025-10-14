@@ -21,3 +21,4 @@ public final class Password {
 
     public String getHash() { return hash; }
 }
+// GenBCrypt.java

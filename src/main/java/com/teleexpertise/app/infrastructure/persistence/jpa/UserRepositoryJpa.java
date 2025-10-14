@@ -70,20 +70,20 @@ public class UserRepositoryJpa implements UserRepository {
 
     @Override
     public Optional<User> getUserByEmail(Email email) {
-        EntityManager em = JpaUtil.getEntityManager();
-        try{
-            User user = em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
-                    .setParameter("email", email)
-                    .getSingleResult();
-            return Optional.ofNullable(user);
-        }catch (Exception e){
-            e.printStackTrace();
+        EntityManager entityManager = JpaUtil.getEntityManager();
+
+        List<User> results = entityManager.createQuery(
+                        "SELECT u FROM User u WHERE u.email = :email", User.class)
+                .setParameter("email", email)
+                .getResultList();
+
+        if (results.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(results.get(0));
         }
-        finally {
-            if (em.isOpen()) em.close(); // toujours fermer l'EntityManager
-        }
-        return Optional.empty();
     }
+
 
     @Override
     public boolean userExistsByEmail(Email email) {

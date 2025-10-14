@@ -44,6 +44,7 @@ public class Patient {
     @Column(name = "created_at")
     private Instant createdAt;
 
+
     public String getId() {
         return id;
     }
