@@ -1,5 +1,7 @@
 package com.teleexpertise.app.domain.model;
 
+import com.teleexpertise.app.domain.model.enums.ConsultationStatus;
+import com.teleexpertise.app.domain.model.enums.Priority;
 import com.teleexpertise.app.domain.model.user.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -42,17 +44,18 @@ public class Consultation {
     @Column(name = "treatment", length = Integer.MAX_VALUE)
     private String treatment;
 
-    @ColumnDefault("'EN_COURS'")
-    @Column(name = "status", length = 30)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 30, nullable = false)
+    private ConsultationStatus status = ConsultationStatus.EN_COURS;
 
     @ColumnDefault("150.00")
     @Column(name = "cost", precision = 10, scale = 2)
     private BigDecimal cost;
 
-    @ColumnDefault("'NORMALE'")
-    @Column(name = "priority", length = 20)
-    private String priority;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "priority", length = 20, nullable = false)
+    private Priority priority = Priority.NORMAL;
+
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_at")
@@ -122,11 +125,11 @@ public class Consultation {
         this.treatment = treatment;
     }
 
-    public String getStatus() {
+    public ConsultationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ConsultationStatus status) {
         this.status = status;
     }
 
@@ -138,11 +141,11 @@ public class Consultation {
         this.cost = cost;
     }
 
-    public String getPriority() {
+    public Priority getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(Priority priority) {
         this.priority = priority;
     }
 
