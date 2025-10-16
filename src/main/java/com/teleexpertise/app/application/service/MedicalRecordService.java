@@ -34,4 +34,16 @@ public class MedicalRecordService {
         return recordRepository.save(medicalRecord);
     }
 
+    //fonction qui récupère un dossier médical par son id
+    public MedicalRecord getMedicalRecordById(String id) {
+
+        Optional<MedicalRecord> recordOpt = recordRepository.findById(id);
+
+        if (recordOpt.isPresent()) {
+            return recordOpt.get();
+        } else {
+            throw new IllegalArgumentException("Medical record not found for id: " + id);
+        }
+    }
+
 }
