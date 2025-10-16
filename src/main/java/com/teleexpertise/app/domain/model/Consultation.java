@@ -19,7 +19,7 @@ public class Consultation {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "record_id", nullable = false)
-    private Patient record;
+    private MedicalRecord medicalRecord;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
@@ -66,12 +66,12 @@ public class Consultation {
         this.id = id;
     }
 
-    public Patient getRecord() {
-        return record;
+    public MedicalRecord getRecord() {
+        return medicalRecord;
     }
 
-    public void setRecord(Patient record) {
-        this.record = record;
+    public void setRecord(MedicalRecord medicalRecord) {
+        this.medicalRecord = medicalRecord;
     }
 
     public User getGeneralist() {
