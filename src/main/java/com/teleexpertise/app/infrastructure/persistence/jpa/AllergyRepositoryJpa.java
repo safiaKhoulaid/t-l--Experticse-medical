@@ -2,6 +2,7 @@ package com.teleexpertise.app.infrastructure.persistence.jpa;
 
 import com.teleexpertise.app.domain.model.Allergy;
 import com.teleexpertise.app.domain.repository.AllergyRepository;
+import com.teleexpertise.app.infrastructure.persistence.JpaUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -26,7 +27,7 @@ public class AllergyRepositoryJpa implements AllergyRepository {
     @Override
     public Allergy save(Allergy allergy) {
 
-        EntityManager em = entityManager;
+        EntityManager em = JpaUtil.getEntityManager();
 
         try{
             em.getTransaction().begin();

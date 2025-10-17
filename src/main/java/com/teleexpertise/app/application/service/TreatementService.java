@@ -5,12 +5,13 @@ import com.teleexpertise.app.domain.model.Treatment;
 import com.teleexpertise.app.domain.repository.TraitementRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class TreatementService {
 
     private final TraitementRepository traitementRepository;
 
-    TreatementService(TraitementRepository traitementRepository) {
+    public TreatementService(TraitementRepository traitementRepository) {
         this.traitementRepository = traitementRepository;
     }
 
@@ -20,6 +21,7 @@ public class TreatementService {
             treatment.setRecord(record);
             treatment.setTreatmentName(name);
             treatment.setNotes(notes);
+            treatment.setId(UUID.randomUUID().toString());
             traitementRepository.save(treatment);
             return Optional.of(treatment);
         } catch (Exception e) {

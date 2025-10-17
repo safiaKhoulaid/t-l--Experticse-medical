@@ -1,4 +1,5 @@
-package com.teleexpertise.app.domain.model;
+
+        package com.teleexpertise.app.domain.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -16,9 +17,10 @@ public class VitalSign {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "record_id", nullable = false)
-    private MedicalRecord record;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private MedicalRecord medicalRecord;
+
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "measured_at")
@@ -60,11 +62,11 @@ public class VitalSign {
     }
 
     public MedicalRecord getRecord() {
-        return record;
+        return medicalRecord;
     }
 
     public void setRecord(MedicalRecord record) {
-        this.record = record;
+        this.medicalRecord = record;
     }
 
     public Instant getMeasuredAt() {
@@ -105,6 +107,15 @@ public class VitalSign {
 
     public void setBloodPressureDiastolic(Integer bloodPressureDiastolic) {
         this.bloodPressureDiastolic = bloodPressureDiastolic;
+    }
+
+    // Alias pour compatibilité avec l'EL de la JSP (typo \"bloodPressureDiastoli\")
+    public Integer getBloodPressureDiastoli() {
+        return getBloodPressureDiastolic();
+    }
+
+    public void setBloodPressureDiastoli(Integer bloodPressureDiastoli) {
+        setBloodPressureDiastolic(bloodPressureDiastoli);
     }
 
     public Integer getRespiratoryRate() {

@@ -16,9 +16,25 @@ public class MedicalRecordJpa implements RecordRepository {
     private EntityManager entityManager;
 
     @Override
-    public Optional<Record> findById(Integer id) {
-        return Optional.empty();
+    public Optional<MedicalRecord> findById(String id) {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            MedicalRecord medicalRecord = em.find(MedicalRecord.class, id);
+            em.getTransaction().commit();
+            return Optional.ofNullable(medicalRecord);
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            return Optional.empty();
+        }
+
+
     }
+
+
 
     @Override
     public List<Record> findAll() {
@@ -87,6 +103,7 @@ public class MedicalRecordJpa implements RecordRepository {
             // Utiliser getResultList() qui retourne une List
             List<MedicalRecord> results = em.createQuery(
                             "SELECT r FROM MedicalRecord r WHERE r.patient = :patient",
+
                             MedicalRecord.class
                     )
                     .setParameter("patient", patient)

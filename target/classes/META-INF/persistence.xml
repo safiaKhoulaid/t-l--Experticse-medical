@@ -7,7 +7,8 @@
     <persistence-unit name="teleexpertisePU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>com.teleexpertise.app.domain.model.user.User</class>
-
+        <class>com.teleexpertise.app.domain.model.MedicalRecord</class>
+        <class>com.teleexpertise.app.domain.model.Queue</class>
         <properties>
             <!-- JDBC Connection -->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>

@@ -21,6 +21,7 @@ public class AntecedentService {
             antecedent.setId(UUID.randomUUID().toString());
             antecedent.setTypeAntecedent(name);
             antecedent.setDescription(descreption);
+            antecedent.setRecord(record_id);
             antecedentRepository.save(antecedent);
             return Optional.of(antecedent);
         } catch (Exception e) {

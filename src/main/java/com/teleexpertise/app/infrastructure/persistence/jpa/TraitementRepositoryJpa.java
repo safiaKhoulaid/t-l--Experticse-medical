@@ -2,6 +2,7 @@ package com.teleexpertise.app.infrastructure.persistence.jpa;
 
 import com.teleexpertise.app.domain.model.Treatment;
 import com.teleexpertise.app.domain.repository.TraitementRepository;
+import com.teleexpertise.app.infrastructure.persistence.JpaUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -14,7 +15,7 @@ public class TraitementRepositoryJpa implements TraitementRepository {
 
     @Override
     public Optional<Treatment> save(Treatment treatment) {
-        EntityManager em = entityManager;
+        EntityManager em = JpaUtil.getEntityManager();
 
         try {
             em.getTransaction().begin();

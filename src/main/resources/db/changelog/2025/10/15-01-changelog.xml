@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1760541357600-1" author="ycode">
+        <createTable tableName="allergies">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_allergies"/>
+            </column>
+            <column name="record_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="allergy_name" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="severity" type="VARCHAR(50)"/>
+            <column name="notes" type="text(2147483647)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-2" author="ycode">
+        <createTable tableName="antecedent">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_antecedent"/>
+            </column>
+            <column name="record_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_antecedent" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text(2147483647)"/>
+            <column name="date_diagnostic" type="DATE"/>
+            <column name="statut" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-3" author="ycode">
+        <createTable tableName="attachments">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_attachments"/>
+            </column>
+            <column name="record_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_path" type="text(2147483647)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_type" type="VARCHAR(50)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="uploaded_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-4" author="ycode">
+        <createTable tableName="consultations">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_consultations"/>
+            </column>
+            <column name="record_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="generalist_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="consultation_date" type="DATETIME"/>
+            <column name="motive" type="text(2147483647)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="observations" type="text(2147483647)"/>
+            <column name="diagnosis" type="text(2147483647)"/>
+            <column name="treatment" type="text(2147483647)"/>
+            <column defaultValue="EN_COURS" name="status" type="VARCHAR(30)"/>
+            <column defaultValueNumeric="150.00" name="cost" type="DECIMAL(10, 2)"/>
+            <column defaultValue="NORMALE" name="priority" type="VARCHAR(20)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-5" author="ycode">
+        <createTable tableName="medical_records">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_medical_records"/>
+            </column>
+            <column name="patient_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(200)"/>
+            <column name="description" type="text(2147483647)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="created_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-6" author="ycode">
+        <createTable tableName="patient_queue">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_patient_queue"/>
+            </column>
+            <column name="medical_record_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="priority" type="VARCHAR(255)"/>
+            <column name="queue_number" type="INT"/>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="estimated_time" type="DATETIME"/>
+            <column name="notes" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-7" author="ycode">
+        <createTable tableName="patients">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_patients"/>
+            </column>
+            <column name="first_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="birth_date" type="DATE"/>
+            <column name="gender" type="VARCHAR(10)"/>
+            <column name="phone" type="VARCHAR(20)"/>
+            <column name="address" type="text(2147483647)"/>
+            <column name="numero_ss" type="VARCHAR(20)"/>
+            <column name="mutuelle" type="VARCHAR(100)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="created_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-8" author="ycode">
+        <createTable tableName="requetes">
+            <column name="id_requete" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_requetes"/>
+            </column>
+            <column name="id_medecin_emetteur" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_medecin_expert" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_record" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_consultation" type="VARCHAR(50)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="date_creation" type="DATETIME"/>
+            <column name="objet" type="VARCHAR(255)"/>
+            <column name="description" type="text(2147483647)"/>
+            <column defaultValue="En attente" name="etat" type="VARCHAR(50)"/>
+            <column defaultValue="Normale" name="priorite" type="VARCHAR(20)"/>
+            <column name="date_reponse" type="DATETIME"/>
+            <column name="commentaire_expert" type="text(2147483647)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-9" author="ycode">
+        <createTable tableName="specialties">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_specialties"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text(2147483647)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-10" author="ycode">
+        <createTable tableName="treatments">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_treatments"/>
+            </column>
+            <column name="record_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="treatment_name" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dosage" type="VARCHAR(100)"/>
+            <column name="start_date" type="DATE"/>
+            <column name="end_date" type="DATE"/>
+            <column name="notes" type="text(2147483647)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-11" author="ycode">
+        <createTable tableName="users">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_users"/>
+            </column>
+            <column name="role" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="specialty_id" type="VARCHAR(50)"/>
+            <column name="first_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="VARCHAR(20)"/>
+            <column name="password_hash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="created_at" type="DATETIME"/>
+            <column defaultValueBoolean="true" name="active" type="BOOLEAN"/>
+            <column name="street" type="VARCHAR(255)"/>
+            <column name="city" type="VARCHAR(255)"/>
+            <column name="postalCode" type="VARCHAR(255)"/>
+            <column name="country" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-12" author="ycode">
+        <createTable tableName="vital_signs">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_vital_signs"/>
+            </column>
+            <column name="record_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="measured_at" type="DATETIME"/>
+            <column name="temperature" type="DECIMAL(4, 1)"/>
+            <column name="heart_rate" type="INT"/>
+            <column name="blood_pressure_systolic" type="INT"/>
+            <column name="blood_pressure_diastolic" type="INT"/>
+            <column name="respiratory_rate" type="INT"/>
+            <column name="oxygen_saturation" type="DECIMAL(4, 1)"/>
+            <column name="weight" type="DECIMAL(5, 2)"/>
+            <column name="height" type="DECIMAL(5, 2)"/>
+            <column name="notes" type="text(2147483647)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1760541357600-13" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="record_id" baseTableName="allergies"
+                                 constraintName="FK_ALLERGIES_ON_RECORD" onDelete="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="medical_records"/>
+    </changeSet>
+    <changeSet id="1760541357600-14" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="record_id" baseTableName="antecedent"
+                                 constraintName="FK_ANTECEDENT_ON_RECORD" onDelete="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="medical_records"/>
+    </changeSet>
+    <changeSet id="1760541357600-15" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="record_id" baseTableName="attachments"
+                                 constraintName="FK_ATTACHMENTS_ON_RECORD" onDelete="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="medical_records"/>
+    </changeSet>
+    <changeSet id="1760541357600-16" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="generalist_id" baseTableName="consultations"
+                                 constraintName="FK_CONSULTATIONS_ON_GENERALIST" onDelete="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1760541357600-17" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="record_id" baseTableName="consultations"
+                                 constraintName="FK_CONSULTATIONS_ON_RECORD" onDelete="CASCADE"
+                                 referencedColumnNames="id" referencedTableName="patients"/>
+    </changeSet>
+    <changeSet id="1760541357600-18" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="medical_records"
+                                 constraintName="FK_MEDICAL_RECORDS_ON_PATIENT" onDelete="CASCADE"
+                                 referencedColumnNames="id" referencedTableName="patients"/>
+    </changeSet>
+    <changeSet id="1760541357600-19" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="medical_record_id" baseTableName="patient_queue"
+                                 constraintName="FK_PATIENT_QUEUE_ON_MEDICAL_RECORD" referencedColumnNames="id"
+                                 referencedTableName="medical_records"/>
+    </changeSet>
+    <changeSet id="1760541357600-20" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="id_consultation" baseTableName="requetes"
+                                 constraintName="FK_REQUETES_ON_ID_CONSULTATION" onDelete="SET NULL"
+                                 referencedColumnNames="id" referencedTableName="consultations"/>
+    </changeSet>
+    <changeSet id="1760541357600-21" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="id_medecin_emetteur" baseTableName="requetes"
+                                 constraintName="FK_REQUETES_ON_ID_MEDECIN_EMETTEUR" onDelete="CASCADE"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1760541357600-22" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="id_medecin_expert" baseTableName="requetes"
+                                 constraintName="FK_REQUETES_ON_ID_MEDECIN_EXPERT" onDelete="CASCADE"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1760541357600-23" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="id_record" baseTableName="requetes"
+                                 constraintName="FK_REQUETES_ON_ID_RECORD" onDelete="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="medical_records"/>
+    </changeSet>
+    <changeSet id="1760541357600-24" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="record_id" baseTableName="treatments"
+                                 constraintName="FK_TREATMENTS_ON_RECORD" onDelete="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="medical_records"/>
+    </changeSet>
+    <changeSet id="1760541357600-25" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="specialty_id" baseTableName="users"
+                                 constraintName="FK_USERS_ON_SPECIALTY" onDelete="SET NULL" referencedColumnNames="id"
+                                 referencedTableName="specialties"/>
+    </changeSet>
+    <changeSet id="1760541357600-26" author="ycode">
+        <addForeignKeyConstraint baseColumnNames="record_id" baseTableName="vital_signs"
+                                 constraintName="FK_VITAL_SIGNS_ON_RECORD" onDelete="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="medical_records"/>
+    </changeSet>
+
+</databaseChangeLog>

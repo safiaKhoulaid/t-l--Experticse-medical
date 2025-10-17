@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +43,29 @@ public class MedicalRecord {
 
     public Set<Antecedent> getAntecedents() {
         return antecedents;
+    }
+
+    public List<VitalSign> getVitalSigns() {
+        return vitalSigns;
+    }
+
+    public void setVitalSigns(List<VitalSign> vitalSigns) {
+        this.vitalSigns = vitalSigns;
+    }
+
+    @OneToMany(mappedBy = "medicalRecord", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VitalSign> vitalSigns = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "medicalRecord", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Consultation> consultations;
+
+    public List<Consultation> getConsultations() {
+        return consultations;
+    }
+
+    public void setConsultations(List<Consultation> consultations) {
+        this.consultations = consultations;
     }
 
     public void setAntecedents(Set<Antecedent> antecedents) {
@@ -102,6 +126,14 @@ public class MedicalRecord {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+    // File: `src/main/java/com/teleexpertise/app/domain/model/MedicalRecord.java`
+    public VitalSign getLatestVitalSign() {
+        if (vitalSigns == null || vitalSigns.isEmpty()) {
+            return null;
+        }
+        // choisir selon l'ordre attendu (ici on retourne le dernier ajouté)
+        return vitalSigns.get(vitalSigns.size() - 1);
     }
 
 }

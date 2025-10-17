@@ -83,7 +83,12 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 font-medium">Patients en attente</p>
-                    <p class="text-4xl font-display font-bold mt-2 text-medical-blue" id="waitingCount">8</p>
+                    <p class="text-4xl font-display font-bold mt-2 text-medical-blue" id="waitingCount">
+                        <c:choose>
+                            <c:when test="${not empty queueAttent}">${queueAttent.size()}</c:when>
+                            <c:otherwise>0</c:otherwise>
+                        </c:choose>
+                    </p>
                 </div>
                 <div class="w-14 h-14 bg-medical-blue/10 rounded-xl flex items-center justify-center">
                     <svg class="w-7 h-7 text-medical-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,7 +194,8 @@
                 <div class="border-t border-gray-200 pt-6">
                     <h3 class="text-xl font-display font-semibold mb-6 text-medical-blue" id="formTitle">Nouveau
                         Patient</h3>
-                    <form id="patientForm" class="space-y-5" >
+                    <form id="patientForm" class="space-y-5" action="${pageContext.request.contextPath}/patient"
+                          method="POST">
 
                         <input type="hidden" id="patientId" value="">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -212,7 +218,7 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">N° Sécurité Sociale
                                     *</label>
-                                <input type="text" id="numSecu" name="numSS"
+                                <input type="text" id="numSecu" name="numSS" required
                                        class="w-full bg-beige border border-gray-300 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-medical-blue focus:border-transparent transition-all">
                             </div>
                             <div>
@@ -221,13 +227,13 @@
                                 </label>
                                 <div class="flex items-center gap-6">
                                     <label class="flex items-center space-x-2 cursor-pointer">
-                                        <input type="radio" name="sexe" value="Homme"
+                                        <input type="radio" name="sexe" value="Homme" required
                                                class="accent-medical-blue w-5 h-5 focus:ring-2 focus:ring-medical-blue">
                                         <span class="text-gray-800">Homme</span>
                                     </label>
 
                                     <label class="flex items-center space-x-2 cursor-pointer">
-                                        <input type="radio" name="sexe" value="Femme"
+                                        <input type="radio" name="sexe" value="Femme" required
                                                class="accent-medical-blue w-5 h-5 focus:ring-2 focus:ring-medical-blue">
                                         <span class="text-gray-800">Femme</span>
                                     </label>
@@ -358,12 +364,83 @@
                             </div>
                         </div>
 
+                        <!-- Section Priorité et Estimation -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor"
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                                Priorité et Planning
+                            </h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Priorité -->
+                                <div>
+                                    <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Niveau de priorité *
+                                    </label>
+                                    <select id="priority" name="priority" required
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-medical-blue focus:border-transparent transition-all">
+                                        <option value="">Sélectionner une priorité</option>
+                                        <option value="LOW">🟢 Basse - Consultation de routine</option>
+                                        <option value="NORMAL">🟡 Normale - Consultation standard</option>
+                                        <option value="HIGH">🟠 Haute - Cas préoccupant</option>
+                                        <option value="URGENT">🔴 Urgente - Intervention immédiate</option>
+                                    </select>
+                                </div>
+
+                                <!-- Estimation de temps -->
+                                <div>
+                                    <label for="estimatedDuration" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Durée estimée (minutes)
+                                    </label>
+                                    <select id="estimatedDuration" name="estimatedDuration"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-medical-blue focus:border-transparent transition-all">
+                                        <option value="15">15 minutes - Consultation rapide</option>
+                                        <option value="30" selected>30 minutes - Consultation standard</option>
+                                        <option value="45">45 minutes - Consultation approfondie</option>
+                                        <option value="60">60 minutes - Consultation complexe</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Raison de la priorité -->
+                            <div class="mt-4">
+                                <label for="priorityReason" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Justification de la priorité (optionnel)
+                                </label>
+                                <textarea id="priorityReason" name="priorityReason" rows="3"
+                                          placeholder="Expliquez pourquoi cette priorité est nécessaire..."
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-medical-blue focus:border-transparent transition-all resize-none"></textarea>
+                            </div>
+
+                            <!-- Affichage de l'estimation -->
+                            <div id="estimationInfo" class="mt-4 p-4 bg-blue-50 rounded-lg hidden">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm text-blue-800">
+                                            <strong>Estimation :</strong>
+                                            <span id="queuePosition">Position dans la file : -</span><br>
+                                            <span id="waitingTime">Temps d'attente estimé : -</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="flex gap-3 pt-4">
-                            <button type="submit"
+                            <button type="button" onclick="submitPatientForm()"
                                     class="flex-1 px-6 py-3.5 bg-medical-blue hover:bg-medical-blue-light text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow">
                                 <span id="submitBtnText">Enregistrer et Ajouter à la file</span>
                             </button>
-                            <button type="reset" onclick="resetForm()"
+                            <button type="button" onclick="resetForm()"
                                     class="px-6 py-3.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold transition-all">
                                 Annuler
                             </button>
@@ -373,87 +450,158 @@
             </div>
         </div>
 
-        <div class="space-y-6">
-            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-                <h2 class="text-xl font-display font-semibold mb-6 flex items-center justify-between text-medical-blue">
-                        <span class="flex items-center gap-2">
-                            <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            File d'attente
-                        </span>
-                    <span class="text-sm font-semibold bg-medical-blue/10 text-medical-blue px-3 py-1 rounded-full font-medium">8 patients</span>
-                </h2>
-
-                <div class="space-y-3" id="waitingQueue">
-                    <div class="bg-beige border border-gray-200 rounded-xl p-4 hover:border-medical-blue/50 hover:shadow-sm transition-all">
-                        <div class="flex items-start justify-between mb-2">
-                            <div>
-                                <p class="font-semibold text-medical-blue">Ahmed Benali</p>
-                                <p class="text-sm text-gray-500">N° 2 95 07 75 123 456 78</p>
-                            </div>
-                            <span class="text-xs bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-medium">15 min</span>
-                        </div>
-                        <div class="text-xs text-gray-600 space-y-1">
-                            <p>Arrivée: 09:15</p>
-                            <p>TA: 130/85 | FC: 78 bpm | T: 37.2°C</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-beige border border-gray-200 rounded-xl p-4 hover:border-medical-blue/50 hover:shadow-sm transition-all">
-                        <div class="flex items-start justify-between mb-2">
-                            <div>
-                                <p class="font-semibold text-medical-blue">Sophie Martin</p>
-                                <p class="text-sm text-gray-500">N° 1 85 03 45 987 654 32</p>
-                            </div>
-                            <span class="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-medium">5 min</span>
-                        </div>
-                        <div class="text-xs text-gray-600 space-y-1">
-                            <p>Arrivée: 09:25</p>
-                            <p>TA: 120/75 | FC: 72 bpm | T: 36.8°C</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-beige border border-gray-200 rounded-xl p-4 hover:border-medical-blue/50 hover:shadow-sm transition-all">
-                        <div class="flex items-start justify-between mb-2">
-                            <div>
-                                <p class="font-semibold text-medical-blue">Jean Dupont</p>
-                                <p class="text-sm text-gray-500">N° 1 75 12 92 456 789 01</p>
-                            </div>
-                            <span class="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-medium">2 min</span>
-                        </div>
-                        <div class="text-xs text-gray-600 space-y-1">
-                            <p>Arrivée : 09:28</p>
-                            <p>TA: 125/80 | FC: 75 bpm | T: 37.0°C</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Section File d'attente -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-800">
+                    File d'attente des patients
+                    <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                        <c:choose>
+                            <c:when test="${not empty queueAttent}">${queueAttent.size()}</c:when>
+                            <c:otherwise>0</c:otherwise>
+                        </c:choose>
+                    </span>
+                </h3>
+                <button onclick="refreshQueue()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    Actualiser
+                </button>
             </div>
 
-            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-                <h3 class="text-lg font-display font-semibold mb-5 text-medical-blue">Patients du jour</h3>
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between py-3 border-b border-gray-200">
-                        <span class="text-gray-600 font-medium">Total enregistrés</span>
-                        <span class="font-bold text-medical-blue">24</span>
+            <!-- Liste des patients -->
+            <c:choose>
+                <c:when test="${empty queueAttent}">
+                    <div class="text-center py-8">
+                        <p class="text-gray-500">Aucun patient en attente</p>
                     </div>
-                    <div class="flex justify-between py-3 border-b border-gray-200">
-                        <span class="text-gray-600 font-medium">En consultation</span>
-                        <span class="font-bold text-blue-600">3</span>
+                </c:when>
+                <c:otherwise>
+                    <div class="space-y-4">
+                        <c:forEach var="queue" items="${queueAttent}" varStatus="status">
+                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
+                                 data-queue-id="${queue.id}">
+                                <div class="flex justify-between items-center">
+                                    <!-- Informations patient -->
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
+                                                ${status.index + 1}
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">
+                                                    ${queue.patient.firstName} ${queue.patient.lastName}
+                                            </h4>
+                                            <div class="text-sm text-gray-600 space-x-4">
+                                                <span>N° File: #${queue.queueNumber}</span>
+                                                <span class="priority-${queue.priority}">
+                                                    Priorité: ${queue.priority.displayName}
+                                                </span>
+                                                <span>Statut: ${queue.status.displayName}</span>
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                Arrivée: <fmt:formatDate value="${queue.createdAt}" pattern="HH:mm"/>
+                                                <c:if test="${not empty queue.estimatedTime}">
+                                                    | Estimation: <fmt:formatDate value="${queue.estimatedTime}"
+                                                                                  pattern="HH:mm"/>
+                                                </c:if>
+                                            </div>
+                                            <c:if test="${not empty queue.notes}">
+                                                <p class="text-sm text-gray-600 italic mt-1">${queue.notes}</p>
+                                            </c:if>
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="flex space-x-2">
+                                        <c:choose>
+                                            <c:when test="${queue.status == 'WAITING'}">
+                                                <button onclick="startConsultation(${queue.id})"
+                                                        class="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600">
+                                                    Commencer
+                                                </button>
+                                                <button onclick="updatePriority(${queue.id})"
+                                                        class="px-3 py-1 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600">
+                                                    Priorité
+                                                </button>
+                                                <button onclick="cancelConsultation(${queue.id})"
+                                                        class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600">
+                                                    Annuler
+                                                </button>
+                                            </c:when>
+                                            <c:when test="${queue.status == 'IN_PROGRESS'}">
+                                                <button onclick="completeConsultation(${queue.id})"
+                                                        class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+                                                    Terminer
+                                                </button>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-gray-400 text-sm">Terminé</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
                     </div>
-                    <div class="flex justify-between py-3 border-b border-gray-200">
-                        <span class="text-gray-600 font-medium">En attente</span>
-                        <span class="font-bold text-amber-600">8</span>
-                    </div>
-                    <div class="flex justify-between py-3">
-                        <span class="text-gray-600 font-medium">Terminés</span>
-                        <span class="font-bold text-emerald-600">13</span>
-                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-lg font-display font-semibold mb-5 text-medical-blue">Patients du jour</h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between py-3 border-b border-gray-200">
+                    <span class="text-gray-600 font-medium">Total enregistrés</span>
+                    <span class="font-bold text-medical-blue">24</span>
+                </div>
+                <div class="flex justify-between py-3 border-b border-gray-200">
+                    <span class="text-gray-600 font-medium">En consultation</span>
+                    <span class="font-bold text-blue-600">3</span>
+                </div>
+                <div class="flex justify-between py-3 border-b border-gray-200">
+                    <span class="text-gray-600 font-medium">En attente</span>
+                    <span class="font-bold text-amber-600">8</span>
+                </div>
+                <div class="flex justify-between py-3">
+                    <span class="text-gray-600 font-medium">Terminés</span>
+                    <span class="font-bold text-emerald-600">13</span>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Section Patients en attente de transfert -->
+<div class="max-w-7xl mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-4">Patients en attente de transfert</h2>
+    <c:choose>
+        <c:when test="${not empty waitingPatients}">
+            <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow">
+                <thead class="bg-beige">
+                <tr>
+                    <th class="py-2 px-4 border-b">Nom</th>
+                    <th class="py-2 px-4 border-b">Prénom</th>
+                    <th class="py-2 px-4 border-b">Priorité</th>
+                    <th class="py-2 px-4 border-b">Statut</th>
+                    <th class="py-2 px-4 border-b">Date d'entrée</th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach var="q" items="${waitingPatients}">
+                    <tr>
+                        <td class="py-2 px-4 border-b">${q.medicalRecord.patient.lastName}</td>
+                        <td class="py-2 px-4 border-b">${q.medicalRecord.patient.firstName}</td>
+                        <td class="py-2 px-4 border-b">${q.priority}</td>
+                        <td class="py-2 px-4 border-b">${q.status}</td>
+                        <td class="py-2 px-4 border-b"><fmt:formatDate value="${q.createdAt}"
+                                                                       pattern="dd/MM/yyyy HH:mm"/></td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </c:when>
+        <c:otherwise>
+            <p class="text-gray-500">Aucun patient en attente de transfert.</p>
+        </c:otherwise>
+    </c:choose>
 </div>
 
 <script>
@@ -463,37 +611,7 @@
     let currentPatient = null;
 
     // Mock patient database
-    const patientsDB = [
-        {
-            id: 1,
-            nom: 'Benali',
-            prenom: 'Ahmed',
-            dateNaissance: '1975-07-15',
-            numSecu: '2 95 07 75 123 456 78',
-            telephone: '0612345678',
-            mutuelle: 'CNSS',
-            adresse: '123 Rue Mohammed V, Casablanca',
-            antecedents: [
-                {nom: 'Diabète Type 2', description: 'Diagnostiqué en 2018, traité par Metformine'},
-                {nom: 'Hypertension', description: 'Depuis 2020, contrôlée par traitement'}
-            ],
-            allergies: [
-                {nom: 'Pénicilline', description: 'Réaction cutanée sévère en 2015'}
-            ],
-            traitements: [
-                {nom: 'Metformine 850mg', description: '2 fois par jour, matin et soir'},
-                {nom: 'Amlodipine 5mg', description: '1 fois par jour le matin'}
-            ],
-            signesVitaux: {
-                tension: '130/85',
-                freqCard: '78',
-                temperature: '37.2',
-                freqResp: '16',
-                poids: '82.5',
-                taille: '175'
-            }
-        }
-    ];
+    const patientsDB = [];
 
     function addAntecedent() {
         const nomInput = document.getElementById('antecedentNom');
@@ -512,28 +630,21 @@
     function renderAntecedents() {
         const list = document.getElementById('antecedentsList');
         list.innerHTML = antecedents.map((item, index) => `
-                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="flex-1">
-                           <c:forEach var="item" items="${antecedents}">
-    <div class="bg-white border rounded-lg p-4 shadow-sm">
-        <p class="font-semibold text-medical-blue">${item.nom}</p>
-        <c:if test="${not empty item.description}">
-            <p class="text-sm text-gray-600 mt-1">${item.description}</p>
-        </c:if>
-    </div>
-</c:forEach>
-
-                        </div>
-                        <button type="button" onclick="removeAntecedent(${index})"
-                            class="text-red-500 hover:text-red-700 transition-colors ml-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <div class="flex items-start justify-between mb-2">
+                    <div class="flex-1">
+                        <p class="font-semibold text-medical-blue">${item.nom}</p>
+    ${"${item.description ? `<p class='text-sm text-gray-600 mt-1'>${item.description}</p>` : ''}"}
                     </div>
+                    <button type="button" onclick="removeAntecedent(${index})"
+                        class="text-red-500 hover:text-red-700 transition-colors ml-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
-            `).join('');
+            </div>
+        `).join('');
     }
 
     function removeAntecedent(index) {
@@ -558,28 +669,26 @@
     function renderAllergies() {
         const list = document.getElementById('allergiesList');
         list.innerHTML = allergies.map((item, index) => `
-                <div class="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-1">
-                                <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                </svg>
-                                <p class="font-semibold text-red-700">${item.nom}</p>
-                            </div>
-<c:if test="${not empty item.description}">
-    <p class="text-sm text-gray-600 mt-1">${item.description}</p>
-</c:if>
-                        </div>
-                        <button type="button" onclick="removeAllergie(${index})"
-                            class="text-red-500 hover:text-red-700 transition-colors ml-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <div class="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
+                <div class="flex items-start justify-between mb-2">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
-                        </button>
+                            <p class="font-semibold text-red-700">${item.nom}</p>
+                        </div>
+    ${"${item.description ? `<p class='text-sm text-gray-600 mt-1'>${item.description}</p>` : ''}"}
                     </div>
+                    <button type="button" onclick="removeAllergie(${index})"
+                        class="text-red-500 hover:text-red-700 transition-colors ml-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
-            `).join('');
+            </div>
+        `).join('');
     }
 
     function removeAllergie(index) {
@@ -604,28 +713,26 @@
     function renderTraitements() {
         const list = document.getElementById('traitementsList');
         list.innerHTML = traitements.map((item, index) => `
-                <div class="bg-white border border-blue-200 rounded-lg p-4 shadow-sm">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-1">
-                                <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                                </svg>
-                                <p class="font-semibold text-blue-700">${item.nom}</p>
-                            </div>
-<c:if test="${not empty item.description}">
-    <p class="text-sm text-gray-600 mt-1">${item.description}</p>
-</c:if>
-                        </div>
-                        <button type="button" onclick="removeTraitement(${index})"
-                            class="text-red-500 hover:text-red-700 transition-colors ml-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <div class="bg-white border border-blue-200 rounded-lg p-4 shadow-sm">
+                <div class="flex items-start justify-between mb-2">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                             </svg>
-                        </button>
+                            <p class="font-semibold text-blue-700">${item.nom}</p>
+                        </div>
+    ${"${item.description ? `<p class='text-sm text-gray-600 mt-1'>${item.description}</p>` : ''}"}
                     </div>
+                    <button type="button" onclick="removeTraitement(${index})"
+                        class="text-red-500 hover:text-red-700 transition-colors ml-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
-            `).join('');
+            </div>
+        `).join('');
     }
 
     function removeTraitement(index) {
@@ -693,9 +800,9 @@
             <p class="font-semibold text-medical-blue">${patient.prenom} ${patient.nom}</p>
             <p class="text-xs text-gray-400 mt-1">
 <c:choose>
-    <c:when test="${not empty patient.dateNaissance}">
+    <c:when test="${not empty patient.birthDate}">
         Né(e) le:
-        <fmt:formatDate value="${patient.dateNaissance}" pattern="dd/MM/yyyy" />
+        <fmt:formatDate value="${patient.birthDate}" pattern="dd/MM/yyyy" />
     </c:when>
     <c:otherwise>
         Né(e) le: Non renseignée
@@ -844,6 +951,7 @@
 
     }
 
+
     function editPatient() {
         if (!currentPatient) return;
 
@@ -855,13 +963,12 @@
         document.getElementById('prenom').value = currentPatient.prenom;
         document.getElementById('dateNaissance').value = currentPatient.dateNaissance;
         document.getElementById('numSecu').value = currentPatient.numSecu;
-        document.getElementById('telephone').value = currentPatient.telephone || '';
         document.getElementById('mutuelle').value = currentPatient.mutuelle || '';
         document.getElementById('adresse').value = currentPatient.adresse || '';
 
-        antecedents = [...currentPatient.antecedents];
-        allergies = [...currentPatient.allergies];
-        traitements = [...currentPatient.traitements];
+        antecedents = [...(currentPatient.antecedents || [])];
+        allergies = [...(currentPatient.allergies || [])];
+        traitements = [...(currentPatient.traitements || [])];
 
         renderAntecedents();
         renderAllergies();
@@ -881,10 +988,10 @@
     }
 
     function addToQueue() {
-    if (!currentPatient) return;
-    alert(currentPatient.prenom + " " + currentPatient.nom + " a été ajouté(e) à la file d'attente avec succès!");
-    closePatientInfo();
-}
+        if (!currentPatient) return;
+        alert(currentPatient.prenom + " " + currentPatient.nom + " a été ajouté(e) à la file d'attente avec succès!");
+        closePatientInfo();
+    }
 
     function closePatientInfo() {
         document.getElementById('patientInfoSection').classList.add('hidden');
@@ -902,11 +1009,78 @@
         renderAntecedents();
         renderAllergies();
         renderTraitements();
+        document.getElementById('patientForm').reset();
     }
 
+    function submitPatientForm() {
+        const event = new Event('submit');
+        document.getElementById('patientForm').dispatchEvent(event);
+    }
+
+    // Gestionnaire pour le changement de priorité
+    document.getElementById('priority').addEventListener('change', function () {
+        const priority = this.value;
+        const reasonField = document.getElementById('priorityReason');
+
+        if (priority === 'HIGH' || priority === 'URGENT') {
+            reasonField.setAttribute('required', 'required');
+            reasonField.parentElement.classList.add('border-red-200');
+        } else {
+            reasonField.removeAttribute('required');
+            reasonField.parentElement.classList.remove('border-red-200');
+        }
+    });
+
+    // Estimation en temps réel
+    document.getElementById('estimatedDuration').addEventListener('change', function () {
+        updateEstimation();
+    });
+
+    document.getElementById('priority').addEventListener('change', function () {
+        updateEstimation();
+    });
+
+    function updateEstimation() {
+        const priority = document.getElementById('priority').value;
+        const duration = document.getElementById('estimatedDuration').value;
+
+        if (priority && duration) {
+            // Appel AJAX pour obtenir l'estimation en temps réel
+            fetch(`http://localhost:8080/teleexpertise/queue/estimate?priority=${priority}&duration=${duration}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.position && data.estimatedTime) {
+                        showQueueInfo('À déterminer', data.position, data.estimatedTime);
+                    }
+                })
+                .catch(err => console.error('Erreur estimation:', err));
+        }
+    }
+
+    function showQueueInfo(queueNumber, position, estimatedTime) {
+        document.getElementById('queuePosition').textContent = `Position dans la file : ${position}`;
+        document.getElementById('waitingTime').textContent = `Temps d'attente estimé : ${estimatedTime}`;
+        document.getElementById('estimationInfo').classList.remove('hidden');
+    }
+
+    function hideEstimationInfo() {
+        document.getElementById('estimationInfo').classList.add('hidden');
+    }
+
+    // Gestionnaire de soumission du formulaire
     document.getElementById('patientForm').addEventListener('submit', function (e) {
-        e.preventDefault(); // Stoppe bien le comportement par défaut
+        e.preventDefault();
         console.log('Form submission intercepted');
+
+        // Récupération de la priorité
+        const priorityElement = document.getElementById('priority');
+        const selectedPriority = priorityElement.value;
+
+        if (!selectedPriority) {
+            alert('Veuillez sélectionner une priorité !');
+            priorityElement.focus();
+            return;
+        }
 
         const data = {
             id: document.getElementById('patientId').value,
@@ -914,7 +1088,6 @@
             prenom: document.getElementById('prenom').value,
             dateNaissance: document.getElementById('dateNaissance').value,
             numSecu: document.getElementById('numSecu').value,
-            telephone: document.getElementById('telephone') ? document.getElementById('telephone').value : '',
             mutuelle: document.getElementById('mutuelle').value,
             adresse: document.getElementById('adresse').value,
             sexe: document.querySelector('input[name="sexe"]:checked')?.value,
@@ -928,14 +1101,18 @@
                 freqResp: document.getElementById('freqResp').value,
                 poids: document.getElementById('poids').value,
                 taille: document.getElementById('taille').value
-            }
+            },
+            priority: selectedPriority,
+            estimatedDuration: parseInt(document.getElementById('estimatedDuration').value),
+            priorityReason: document.getElementById('priorityReason').value
         };
 
-        console.log('Submitting patient data:', data);
+        console.log('Submitting patient data with priority:', data);
 
-        // Vérifiez l'URL - pas de "action=" avant le template string
-        const url = `${pageContext.request.contextPath}/patient`;
-        console.log('Submitting to URL:', url);
+        // Afficher un loader sur le bouton
+        const submitBtn = document.getElementById('submitBtnText');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Ajout en cours...';
 
         fetch("http://localhost:8080/teleexpertise/patient", {
             method: 'POST',
@@ -950,24 +1127,113 @@
             })
             .then(response => {
                 console.log('Success response:', response);
-                alert('Patient enregistré avec succès !');
-                this.reset();
+
+                // Afficher les informations de la file d'attente
+                if (response.queueNumber && response.position && response.estimatedTime) {
+                    showQueueInfo(response.queueNumber, response.position, response.estimatedTime);
+                }
+
+                alert(`Patient enregistré avec succès !\nNuméro de file : ${response.queueNumber || 'N/A'}\nPosition : ${response.position || 'N/A'}`);
+
+                // Reset du formulaire
                 resetForm();
+                hideEstimationInfo();
             })
             .catch(err => {
                 console.error('Error during fetch:', err);
                 alert('Erreur lors de l\'enregistrement du patient.');
+            })
+            .finally(() => {
+                // Restaurer le bouton
+                submitBtn.textContent = originalText;
             });
     });
-    function logout() {
-        if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
-            window.location.href = 'login.html';
-        }
 
-
+    // Fonctions pour la file d'attente
+    function refreshQueue() {
+        location.reload();
     }
 
+    function startConsultation(queueId) {
+        if (confirm('Commencer la consultation pour ce patient ?')) {
+            fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/start`, {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        refreshQueue();
+                    } else {
+                        alert('Erreur lors du début de la consultation');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Erreur lors du début de la consultation');
+                });
+        }
+    }
 
+    function completeConsultation(queueId) {
+        if (confirm('Terminer la consultation pour ce patient ?')) {
+            fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/complete`, {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        refreshQueue();
+                    } else {
+                        alert('Erreur lors de la fin de la consultation');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Erreur lors de la fin de la consultation');
+                });
+        }
+    }
+
+    function cancelConsultation(queueId) {
+        if (confirm('Annuler la consultation pour ce patient ?')) {
+            fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/cancel`, {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        refreshQueue();
+                    } else {
+                        alert('Erreur lors de l\'annulation de la consultation');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Erreur lors de l\'annulation de la consultation');
+                });
+        }
+    }
+
+    function updatePriority(queueId) {
+        const newPriority = prompt('Nouvelle priorité (LOW, NORMAL, HIGH, URGENT):');
+        if (newPriority) {
+            fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/priority`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({priority: newPriority})
+            })
+                .then(response => {
+                    if (response.ok) {
+                        refreshQueue();
+                    } else {
+                        alert('Erreur lors de la mise à jour de la priorité');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Erreur lors de la mise à jour de la priorité');
+                });
+        }
+    }
 </script>
 </body>
 </html>
