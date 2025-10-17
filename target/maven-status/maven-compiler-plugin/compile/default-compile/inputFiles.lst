@@ -1,6 +1,8 @@
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\infrastructure\persistence\jpa\AllergyRepositoryJpa.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\domain\model\enums\QueueStatus.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\infrastructure\persistence\jpa\UserRepositoryJpa.java
+C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\presentation\servlet\DoctorDashboardServlet.java
+C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\presentation\servlet\DashboardRedirectServlet.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\infrastructure\persistence\jpa\PatientRepositoryJpa.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\application\service\UserService.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\application\service\AntecedentService.java
@@ -18,7 +20,9 @@ C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\application\servic
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\presentation\servlet\adapter\LocalDateAdapter.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\presentation\servlet\DashboardServlet.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\domain\vo\Money.java
+C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\presentation\servlet\MedicineServlet.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\presentation\servlet\adapter\InstantAdapter.java
+C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\presentation\servlet\DashboardGeneraliste.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\application\service\AllergyService.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\domain\repository\AntecedentRepository.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\application\service\PatientSerice.java
@@ -33,6 +37,7 @@ C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\domain\repository\
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\domain\model\Antecedent.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\infrastructure\persistence\jpa\QueueRepositoryJpa.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\domain\repository\QueueRepository.java
+C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\presentation\servlet\TestRegestrer.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\domain\model\Attachment.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\infrastructure\persistence\converter\PasswordConverter.java
 C:\projects\teleexpertise\src\main\java\com\teleexpertise\app\presentation\servlet\QueueServlet.java

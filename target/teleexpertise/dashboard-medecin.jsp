@@ -133,7 +133,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
             <!-- Section patients avec design ultra moderne et coloré -->
-            <div class="bg-white rounded-3xl p-10 shadow-xl border-4 border-sky">
+            <div class="bg-white rounded-3xl p-10 shadow-xl border-4 border-sky overflow-y-auto max-h-[600px]">
                 <h2 class="text-3xl font-bold mb-8 flex items-center gap-4 text-gray-800">
                     <div class="w-12 h-12 bg-gradient-to-br from-ocean to-violet rounded-xl flex items-center justify-center">
                         <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,8 +210,25 @@
                                     </div>
                                 </div>
 
-                                <button onclick="openConsultation('${queue.medicalRecord.patient.firstName}', '${queue.medicalRecord.patient.numeroSs}', '${queue.medicalRecord.patient.birthDate}')"
+                                <button onclick="openConsultation(
+                                        '${queue.medicalRecord.patient.firstName}',
+                                        '${queue.medicalRecord.patient.lastName}',
+                                        '${queue.medicalRecord.patient.numeroSs}',
+                                        '${queue.medicalRecord.patient.birthDate}',
+                                        '${queue.medicalRecord.patient.id}',
+                                        '${queue.medicalRecord.id}',
+                                        '${queue.medicalRecord.latestVitalSign.bloodPressureDiastolic}',
+                                        '${queue.medicalRecord.latestVitalSign.bloodPressureSystolic}',
+                                        '${queue.medicalRecord.latestVitalSign.temperature}',
+                                        '${queue.medicalRecord.latestVitalSign.respiratoryRate}'
+
+                                        )"
                                         class="w-full px-8 py-5 bg-gradient-to-r from-violet to-pink hover:from-violet/90 hover:to-pink/90 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Créer une consultation
+                                </button>                                        class="w-full px-8 py-5 bg-gradient-to-r from-violet to-pink hover:from-violet/90 hover:to-pink/90 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                     </svg>
@@ -263,57 +280,119 @@
                     </div>
                 </div>
 
-                <form class="space-y-6">
+                <form class="space-y-6" action="${pageContext.request.contextPath}/consultation" method="post">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-3">Motif de consultation *</label>
-                        <input type="text" required class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Ex: Douleurs thoraciques, Fièvre persistante...">
+                        <input type="text" name ="motif" required class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Ex: Douleurs thoraciques, Fièvre persistante...">
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-3">Examen clinique</label>
-                        <textarea rows="4" class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Description de l'examen physique (palpation, auscultation, percussion...)"></textarea>
-                        <p class="text-xs text-gray-500 mt-2 font-medium">Décrivez l'examen physique réalisé sur le patient</p>
-                    </div>
-
+                    <input type="hidden"  name="action" value="startConsultation">
+                    <input type="hidden" name="queueId" value="${queue.id}">
+                    <input type="hidden" id="medicalRecordId" name="medicalRecordId" >
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-3">Symptômes et observations</label>
-                        <textarea rows="4" class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Symptômes rapportés par le patient (ce qu'il ressent et raconte)"></textarea>
+                        <textarea name="observations" rows="4" class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Symptômes rapportés par le patient (ce qu'il ressent et raconte)"></textarea>
                         <p class="text-xs text-gray-500 mt-2 font-medium">Notez les plaintes et symptômes décrits par le patient</p>
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-3">Diagnostic</label>
-                        <input type="text" class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Ex: Bronchite aiguë, Hypertension artérielle...">
+                        <input type="text" name="diagnosis" class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Ex: Bronchite aiguë, Hypertension artérielle...">
                         <p class="text-xs text-gray-500 mt-2 font-medium">La maladie identifiée</p>
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-3">Prescription / Traitement</label>
-                        <textarea rows="5" class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Ex:&#10;- Paracétamol 1g, 3 fois/jour pendant 5 jours&#10;- Sirop antitussif, 2 cuillères/jour&#10;- Repos recommandé"></textarea>
+                        <textarea name="treatment" rows="5" class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Ex:&#10;- Paracétamol 1g, 3 fois/jour pendant 5 jours&#10;- Sirop antitussif, 2 cuillères/jour&#10;- Repos recommandé"></textarea>
                         <p class="text-xs text-gray-500 mt-2 font-medium">Médicaments prescrits avec posologie</p>
                     </div>
 
+<%--                    <div class="border-t-4 border-mint pt-8">--%>
+<%--                        <h3 class="text-2xl font-bold mb-6 text-gray-800">Coût de la consultation</h3>--%>
+<%--                        <div class="bg-gradient-to-br from-mint to-white rounded-2xl p-8 space-y-4 shadow-lg border-4 border-lime">--%>
+<%--                            <div class="flex justify-between text-base">--%>
+<%--                                <span class="text-gray-600 font-semibold">Consultation généraliste</span>--%>
+<%--                                <span class="font-bold text-gray-800 text-lg">150 DH</span>--%>
+<%--                            </div>--%>
+<%--                            <div class="flex justify-between text-base">--%>
+<%--                                <span class="text-gray-600 font-semibold">Actes techniques</span>--%>
+<%--                                <span class="font-bold text-gray-800 text-lg">0 DH</span>--%>
+<%--                            </div>--%>
+<%--                            <div class="flex justify-between text-base">--%>
+<%--                                <span class="text-gray-600 font-semibold">Expertise spécialiste</span>--%>
+<%--                                <span class="font-bold text-gray-800 text-lg">0 DH</span>--%>
+<%--                            </div>--%>
+<%--                            <div class="border-t-4 border-lime pt-4 mt-4 flex justify-between font-bold">--%>
+<%--                                <span class="text-gray-800 text-xl">Total</span>--%>
+<%--                                <span class="text-lime text-3xl">150 DH</span>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+                    <!-- Priorité de la consultation -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                            Priorité de la consultation
+                        </label>
+                        <div class="flex gap-6">
+                            <label class="flex items-center">
+                                <input type="radio" name="priority" value="low" class="w-4 h-4 text-blue-500">
+                                <span class="ml-2 text-gray-700">Basse (Low)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="priority" value="normal" class="w-4 h-4 text-blue-500">
+                                <span class="ml-2 text-gray-700">Normal</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="priority" value="high" class="w-4 h-4 text-blue-500">
+                                <span class="ml-2 text-gray-700">Élevée (High)</span>
+                            </label>
+                        </div>
+                    </div>
                     <div class="border-t-4 border-mint pt-8">
                         <h3 class="text-2xl font-bold mb-6 text-gray-800">Coût de la consultation</h3>
                         <div class="bg-gradient-to-br from-mint to-white rounded-2xl p-8 space-y-4 shadow-lg border-4 border-lime">
-                            <div class="flex justify-between text-base">
-                                <span class="text-gray-600 font-semibold">Consultation généraliste</span>
-                                <span class="font-bold text-gray-800 text-lg">150 DH</span>
+                            <!-- Added input fields for cost entry instead of static display -->
+                            <div class="flex justify-between items-center text-base">
+                                <label class="text-gray-600 font-semibold">Consultation généraliste</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="consultationCost" value="150" min="0" step="0.01" class="w-24 bg-white border-2 border-gray-200 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-ocean/30 focus:border-ocean transition-all" onchange="calculateTotal()">
+                                    <span class="font-bold text-gray-800 text-lg">DH</span>
+                                </div>
                             </div>
-                            <div class="flex justify-between text-base">
-                                <span class="text-gray-600 font-semibold">Actes techniques</span>
-                                <span class="font-bold text-gray-800 text-lg">0 DH</span>
+                            <div class="flex justify-between items-center text-base">
+                                <label class="text-gray-600 font-semibold">Actes techniques</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="technicalCost" value="0" min="0" step="0.01" class="w-24 bg-white border-2 border-gray-200 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-ocean/30 focus:border-ocean transition-all" onchange="calculateTotal()">
+                                    <span class="font-bold text-gray-800 text-lg">DH</span>
+                                </div>
                             </div>
-                            <div class="flex justify-between text-base">
-                                <span class="text-gray-600 font-semibold">Expertise spécialiste</span>
-                                <span class="font-bold text-gray-800 text-lg">0 DH</span>
+                            <div class="flex justify-between items-center text-base">
+                                <label class="text-gray-600 font-semibold">Expertise spécialiste</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="specialistCost" value="0" min="0" step="0.01" class="w-24 bg-white border-2 border-gray-200 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-ocean/30 focus:border-ocean transition-all" onchange="calculateTotal()">
+                                    <span class="font-bold text-gray-800 text-lg">DH</span>
+                                </div>
                             </div>
                             <div class="border-t-4 border-lime pt-4 mt-4 flex justify-between font-bold">
                                 <span class="text-gray-800 text-xl">Total</span>
-                                <span class="text-lime text-3xl">150 DH</span>
+                                <span class="text-lime text-3xl" id="totalCost">150 DH</span>
+                                <input  name = "cout" type="hidden" id="totalCost" value="150">
+                                <input name="generalistId" value="${sessionScope.user.id}" type="hidden">
                             </div>
+
                         </div>
                     </div>
+
+
+                    <script>
+                        function calculateTotal() {
+                            const consultation = parseFloat(document.getElementById('consultationCost').value) || 0;
+                            const technical = parseFloat(document.getElementById('technicalCost').value) || 0;
+                            const specialist = parseFloat(document.getElementById('specialistCost').value) || 0;
+                            const total = consultation + technical + specialist;
+                            document.getElementById('totalCost').textContent = total.toFixed(2) + ' DH';
+                        }
+                    </script>
+
 
                     <div class="flex gap-6 pt-6">
                         <button type="button" onclick="showExpertiseModal()" class="flex-1 px-8 py-5 bg-gradient-to-r from-coral to-pink hover:from-coral/90 hover:to-pink/90 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3">
@@ -494,14 +573,33 @@
         </div>
     </div>
 </div>
-
+<button onclick="openConsultation(
+        '${queue.medicalRecord.patient.firstName}',
+        '${queue.medicalRecord.patient.lastName}',
+        '${queue.medicalRecord.patient.numeroSs}',
+        '${queue.medicalRecord.patient.birthDate}',
+        '${queue.medicalRecord.patient.id}',
+        '${queue.medicalRecord.id}',
+        '${queue.medicalRecord.latestVitalSign.bloodPressureDiastolic}',
+        '${queue.medicalRecord.latestVitalSign.bloodPressureSystolic}',
+        '${queue.medicalRecord.latestVitalSign.temperature}',
+        '${queue.medicalRecord.latestVitalSign.respiratoryRate}',
+        '${queue.medicalRecord.weight}',
+        '${queue.medicalRecord.height}'
+        )"
+        class="w-full px-8 py-5 bg-gradient-to-r from-violet to-pink hover:from-violet/90 hover:to-pink/90 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Créer une consultation
+</button>
 <script>
-    function openConsultation(name, ssn, dob, ta, fc, temp, fr, weight, height) {
+    function openConsultation(firstName,lastName , ssn, dob, patientId,medicalRecordId  ) {
         document.getElementById('consultationForm').classList.remove('hidden');
-        document.getElementById('patientName').textContent = name;
+        document.getElementById('patientName').textContent = firstName + lastName;
         document.getElementById('patientSSN').textContent = ssn;
         document.getElementById('patientDOB').textContent = dob;
-        document.getElementById('patientVitals').textContent = `TA: ${ta} | FC: ${fc} bpm | T: ${temp}°C | FR: ${fr}/min | ${weight}kg / ${height}cm`;
+        document.getElementById('medicalRecordId').value= medicalRecordId;
 
         setTimeout(() => {
             document.getElementById('consultationForm').scrollIntoView({ behavior: 'smooth', block: 'start' });

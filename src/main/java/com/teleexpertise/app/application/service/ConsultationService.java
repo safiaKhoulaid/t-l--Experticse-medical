@@ -9,6 +9,7 @@ import com.teleexpertise.app.domain.repository.RecordRepository;
 import org.apache.commons.lang3.EnumUtils;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class ConsultationService {
 
@@ -38,7 +39,7 @@ public class ConsultationService {
         consultation.setDiagnosis(diagnosis);
         consultation.setTreatment(treatment);
         consultation.setPriority(Priority.valueOf(priorityStr.toUpperCase()));
-
+        consultation.setId(null);
         try {
             return consultationRepository.save(consultation).orElseThrow(
                     () -> new RuntimeException("Erreur lors de la création de la consultation")

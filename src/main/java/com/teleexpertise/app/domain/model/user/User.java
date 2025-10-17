@@ -1,5 +1,6 @@
 package com.teleexpertise.app.domain.model.user;
 
+import com.teleexpertise.app.domain.model.Consultation;
 import com.teleexpertise.app.domain.model.Specialty;
 import com.teleexpertise.app.domain.vo.Address;
 import com.teleexpertise.app.domain.vo.Email;
@@ -12,6 +13,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -58,6 +61,9 @@ public class User {
     @ColumnDefault("true")
     @Column(name = "active")
     private Boolean active;
+
+    @OneToMany(mappedBy = "generalist", cascade = CascadeType.ALL)
+    private List<Consultation> consultations = new ArrayList<>();
 
     public String getId() {
         return id;

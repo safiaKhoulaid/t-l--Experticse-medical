@@ -1,9 +1,6 @@
 package com.teleexpertise.app.domain.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
@@ -44,6 +41,18 @@ public class Patient {
     @Column(name = "created_at")
     private Instant createdAt;
 
+
+    public MedicalRecord getMedicalRecord() {
+        return medicalRecord;
+    }
+
+    public void setMedicalRecord(MedicalRecord medicalRecord) {
+        this.medicalRecord = medicalRecord;
+    }
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "medical_record_id")
+    private MedicalRecord medicalRecord;
 
     public String getId() {
         return id;

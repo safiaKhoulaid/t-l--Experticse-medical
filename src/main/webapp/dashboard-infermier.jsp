@@ -404,6 +404,44 @@
                                         <option value="60">60 minutes - Consultation complexe</option>
                                     </select>
                                 </div>
+
+                                <!-- Type de consultation (normal ou demande d'expert) -->
+                                <div>
+                                    <label for="consultationType" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Type de consultation *
+                                    </label>
+                                    <select id="consultationType" name="consultationType" required
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-medical-blue focus:border-transparent transition-all">
+                                        <option value="NORMAL">Consultation normale</option>
+                                        <option value="REQUEST_EXPERT">Demander un expert</option>
+                                    </select>
+                                </div>
+
+                                <!-- Champs visibles uniquement si REQUEST_EXPERT -->
+                                <div id="expertRequestFields" class="hidden mt-4 space-y-3">
+                                    <div>
+                                        <label for="expertSpecialty" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Spécialité demandée
+                                        </label>
+                                        <select id="expertSpecialty" name="expertSpecialty"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-medical-blue focus:border-transparent transition-all">
+                                            <option value="">Sélectionner une spécialité</option>
+                                            <option value="DERMATOLOGIE">Dermatologie</option>
+                                            <option value="RADIOLOGIE">Radiologie</option>
+                                            <option value="CARDIOLOGIE">Cardiologie</option>
+                                            <option value="NEUROLOGIE">Neurologie</option>
+                                            <option value="OTHER">Autre</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="expertReason" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Motif de la demande d'expert (obligatoire si demande d'expert)
+                                        </label>
+                                        <textarea id="expertReason" name="expertReason" rows="3"
+                                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-medical-blue focus:border-transparent transition-all resize-none"
+                                                  placeholder="Expliquez brièvement pourquoi un expert est nécessaire..."></textarea>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Raison de la priorité -->
@@ -495,6 +533,11 @@
                                                     Priorité: ${queue.priority.displayName}
                                                 </span>
                                                 <span>Statut: ${queue.status.displayName}</span>
+                                                <c:if test="${queue.requestExpert}">
+                                                    <span class="ml-2 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full">
+                                                        Expert demandé <c:if test="${not empty queue.expertSpecialty}">(${queue.expertSpecialty})</c:if>
+                                                    </span>
+                                                </c:if>
                                             </div>
                                             <div class="text-xs text-gray-500 mt-1">
                                                 Arrivée: <fmt:formatDate value="${queue.createdAt}" pattern="HH:mm"/>
@@ -525,12 +568,24 @@
                                                         class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600">
                                                     Annuler
                                                 </button>
+                                                <c:if test="${not queue.requestExpert}">
+                                                    <button onclick="requestExpert(${queue.id})"
+                                                            class="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700">
+                                                        Demander expert
+                                                    </button>
+                                                </c:if>
                                             </c:when>
                                             <c:when test="${queue.status == 'IN_PROGRESS'}">
-                                                <button onclick="completeConsultation(${queue.id})"
+                                                <button onclick="closeConsultation(${queue.id})"
                                                         class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
-                                                    Terminer
+                                                    Clôturer
                                                 </button>
+                                                <c:if test="${not queue.requestExpert}">
+                                                    <button onclick="requestExpert(${queue.id})"
+                                                            class="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700">
+                                                        Demander expert
+                                                    </button>
+                                                </c:if>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="text-gray-400 text-sm">Terminé</span>
@@ -1104,7 +1159,11 @@
             },
             priority: selectedPriority,
             estimatedDuration: parseInt(document.getElementById('estimatedDuration').value),
-            priorityReason: document.getElementById('priorityReason').value
+            priorityReason: document.getElementById('priorityReason').value,
+            // nouveaux champs pour la gestion expert
+            requestExpert: document.getElementById('consultationType').value === 'REQUEST_EXPERT',
+            expertSpecialty: document.getElementById('expertSpecialty').value || null,
+            expertReason: document.getElementById('expertReason').value || null
         };
 
         console.log('Submitting patient data with priority:', data);
@@ -1149,91 +1208,70 @@
             });
     });
 
-    // Fonctions pour la file d'attente
-    function refreshQueue() {
-        location.reload();
+    // Demander un expert depuis la file (action sur un queue item)
+    function requestExpert(queueId) {
+        const specialty = prompt('Spécialité demandée (ex: RADIOLOGIE, DERMATOLOGIE) :');
+        if (!specialty) return;
+
+        const reason = prompt('Motif de la demande (court) :') || '';
+
+        fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/request-expert`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({expertSpecialty: specialty, expertReason: reason})
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Demande d\'expert envoyée.');
+                    refreshQueue();
+                } else {
+                    alert('Erreur lors de la demande d\'expert.');
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Erreur lors de la demande d\'expert.');
+            });
     }
 
-    function startConsultation(queueId) {
-        if (confirm('Commencer la consultation pour ce patient ?')) {
-            fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/start`, {
-                method: 'POST'
+    // Clôturer une consultation (remplace "Terminer" si vous préférez)
+    function closeConsultation(queueId) {
+        if (!confirm('Clôturer définitivement la consultation pour ce patient ?')) return;
+
+        fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/close`, {
+            method: 'POST'
+        })
+            .then(response => {
+                if (response.ok) {
+                    refreshQueue();
+                } else {
+                    alert('Erreur lors de la clôture de la consultation');
+                }
             })
-                .then(response => {
-                    if (response.ok) {
-                        refreshQueue();
-                    } else {
-                        alert('Erreur lors du début de la consultation');
-                    }
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    alert('Erreur lors du début de la consultation');
-                });
-        }
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Erreur lors de la clôture de la consultation');
+            });
     }
 
-    function completeConsultation(queueId) {
-        if (confirm('Terminer la consultation pour ce patient ?')) {
-            fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/complete`, {
-                method: 'POST'
-            })
-                .then(response => {
-                    if (response.ok) {
-                        refreshQueue();
-                    } else {
-                        alert('Erreur lors de la fin de la consultation');
-                    }
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    alert('Erreur lors de la fin de la consultation');
-                });
-        }
-    }
+    // ajout gestion affichage champs expert
+    document.getElementById('consultationType').addEventListener('change', function () {
+        const val = this.value;
+        const expertFields = document.getElementById('expertRequestFields');
+        const expertSpec = document.getElementById('expertSpecialty');
+        const expertReason = document.getElementById('expertReason');
 
-    function cancelConsultation(queueId) {
-        if (confirm('Annuler la consultation pour ce patient ?')) {
-            fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/cancel`, {
-                method: 'POST'
-            })
-                .then(response => {
-                    if (response.ok) {
-                        refreshQueue();
-                    } else {
-                        alert('Erreur lors de l\'annulation de la consultation');
-                    }
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    alert('Erreur lors de l\'annulation de la consultation');
-                });
+        if (val === 'REQUEST_EXPERT') {
+            expertFields.classList.remove('hidden');
+            expertSpec.setAttribute('required', 'required');
+            expertReason.setAttribute('required', 'required');
+        } else {
+            expertFields.classList.add('hidden');
+            expertSpec.removeAttribute('required');
+            expertReason.removeAttribute('required');
         }
-    }
-
-    function updatePriority(queueId) {
-        const newPriority = prompt('Nouvelle priorité (LOW, NORMAL, HIGH, URGENT):');
-        if (newPriority) {
-            fetch(`http://localhost:8080/teleexpertise/queue/${queueId}/priority`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({priority: newPriority})
-            })
-                .then(response => {
-                    if (response.ok) {
-                        refreshQueue();
-                    } else {
-                        alert('Erreur lors de la mise à jour de la priorité');
-                    }
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    alert('Erreur lors de la mise à jour de la priorité');
-                });
-        }
-    }
+    });
 </script>
 </body>
 </html>
+

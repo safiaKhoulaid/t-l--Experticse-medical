@@ -8,7 +8,6 @@ com\teleexpertise\app\domain\vo\Address.class
 com\teleexpertise\app\domain\model\Specialty.class
 com\teleexpertise\app\domain\model\Queue.class
 com\teleexpertise\app\domain\model\user\User.class
-com\teleexpertise\app\presentation\servlet\DashboardServlet.class
 com\teleexpertise\app\infrastructure\persistence\jpa\ConsultationRepositoryJpa.class
 com\teleexpertise\app\domain\vo\Money.class
 com\teleexpertise\app\application\service\ConsultationService.class
@@ -16,6 +15,7 @@ com\teleexpertise\app\application\service\MedicalRecordService.class
 com\teleexpertise\app\domain\model\enums\ConsultationStatus.class
 com\teleexpertise\app\domain\repository\SigneVitauxRepository.class
 com\teleexpertise\app\infrastructure\persistence\jpa\PatientRepositoryJpa.class
+com\teleexpertise\app\presentation\servlet\TestRegestrer.class
 com\teleexpertise\app\presentation\servlet\PatientServlet.class
 com\teleexpertise\app\application\service\AllergyService.class
 com\teleexpertise\app\domain\model\Patient.class
@@ -33,13 +33,16 @@ com\teleexpertise\app\domain\model\enums\Priority.class
 com\teleexpertise\app\infrastructure\persistence\jpa\QueueRepositoryJpa.class
 com\teleexpertise\app\presentation\servlet\LogoutServlet.class
 com\teleexpertise\app\domain\repository\ConsultationRepository.class
+com\teleexpertise\app\presentation\servlet\DoctorDashboardServlet.class
 com\teleexpertise\app\presentation\servlet\adapter\LocalDateAdapter.class
 com\teleexpertise\app\domain\model\Requete.class
+com\teleexpertise\app\presentation\servlet\DashboardRedirectServlet$1.class
 com\teleexpertise\app\domain\model\Allergy.class
 com\teleexpertise\app\infrastructure\persistence\jpa\SigneVitauxJpa.class
 com\teleexpertise\app\infrastructure\persistence\jpa\AntecedentRepositoryJpa.class
 com\teleexpertise\app\domain\model\VitalSign.class
 com\teleexpertise\app\presentation\servlet\ConsultationServlet.class
+com\teleexpertise\app\presentation\servlet\DashboardRedirectServlet.class
 com\teleexpertise\app\domain\vo\Email.class
 com\teleexpertise\app\infrastructure\persistence\converter\PasswordConverter.class
 com\teleexpertise\app\presentation\servlet\HomeServlet.class
