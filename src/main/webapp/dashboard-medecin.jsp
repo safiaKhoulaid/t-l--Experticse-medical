@@ -79,6 +79,40 @@
 </header>
 
 <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+    <!-- File: src/main/webapp/dashboard-medecin.jsp -->
+    <!-- Ajouter juste après le header ou au début du container principal -->
+    <c:if test="${not empty sucessMessage or not empty errorMessage}">
+        <div id="flashMessage"
+             class="max-w-7xl mx-auto px-6 lg:px-8 mt-6"
+             style="position:relative; z-index:60;">
+            <c:choose>
+                <c:when test="${successMessage != null}">
+                    <div class="bg-green-50 border-l-4 border-green-400 text-green-800 p-4 rounded-lg shadow-md">
+                        <p class="font-semibold">Succès</p>
+                        <p>${successMessage}</p>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="bg-red-50 border-l-4 border-red-400 text-red-800 p-4 rounded-lg shadow-md">
+                        <p class="font-semibold">Erreur</p>
+                        <p>${errorMessage}</p>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+            <!-- supprimer le message de la session après affichage -->
+            <c:remove var="flashMessage" scope="session" />
+            <c:remove var="flashType" scope="session" />
+        </div>
+
+        <script>
+            // Masquer automatiquement après 5s
+            setTimeout(function() {
+                const el = document.getElementById('flashMessage');
+                if (el) { el.style.transition = 'opacity 400ms'; el.style.opacity = '0'; setTimeout(()=>el.remove(), 450); }
+            }, 5000);
+        </script>
+    </c:if>
+
     <!-- Cartes statistiques avec couleurs pastel vives et design moderne -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
         <div class="bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-4 border-sky">
@@ -211,6 +245,7 @@
                                 </div>
 
                                 <button onclick="openConsultation(
+                                        '${queue.id}',
                                         '${queue.medicalRecord.patient.firstName}',
                                         '${queue.medicalRecord.patient.lastName}',
                                         '${queue.medicalRecord.patient.numeroSs}',
@@ -229,10 +264,7 @@
                                     </svg>
                                     Créer une consultation
                                 </button>
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                    </svg>
-                                    Créer une consultation
+
                                 </button>
                             </div>
                         </c:forEach>
@@ -245,6 +277,7 @@
             </div>
 
             <!-- Formulaire de consultation avec design moderne et lumineux -->
+            <div id="consultationForm" class="bg-white rounded-3xl p-10 shadow-xl border-4 border-lavender hidden">
             <div id="consultationForm" class="bg-white rounded-3xl p-10 shadow-xl border-4 border-lavender hidden">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-3xl font-bold flex items-center gap-4 text-gray-800">
@@ -285,7 +318,7 @@
                         <label class="block text-sm font-bold text-gray-700 mb-3">Motif de consultation *</label>
                         <input type="text" name ="motif" required class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Ex: Douleurs thoraciques, Fièvre persistante...">
                     </div>
-                    <input type="hidden"  name="action" value="startConsultation">
+                    <input type="hidden"  name="action" value="">
                     <input type="hidden" name="queueId" value="${queue.id}">
                     <input type="hidden" id="medicalRecordId" name="medicalRecordId" >
                     <div>
@@ -306,27 +339,6 @@
                         <p class="text-xs text-gray-500 mt-2 font-medium">Médicaments prescrits avec posologie</p>
                     </div>
 
-<%--                    <div class="border-t-4 border-mint pt-8">--%>
-<%--                        <h3 class="text-2xl font-bold mb-6 text-gray-800">Coût de la consultation</h3>--%>
-<%--                        <div class="bg-gradient-to-br from-mint to-white rounded-2xl p-8 space-y-4 shadow-lg border-4 border-lime">--%>
-<%--                            <div class="flex justify-between text-base">--%>
-<%--                                <span class="text-gray-600 font-semibold">Consultation généraliste</span>--%>
-<%--                                <span class="font-bold text-gray-800 text-lg">150 DH</span>--%>
-<%--                            </div>--%>
-<%--                            <div class="flex justify-between text-base">--%>
-<%--                                <span class="text-gray-600 font-semibold">Actes techniques</span>--%>
-<%--                                <span class="font-bold text-gray-800 text-lg">0 DH</span>--%>
-<%--                            </div>--%>
-<%--                            <div class="flex justify-between text-base">--%>
-<%--                                <span class="text-gray-600 font-semibold">Expertise spécialiste</span>--%>
-<%--                                <span class="font-bold text-gray-800 text-lg">0 DH</span>--%>
-<%--                            </div>--%>
-<%--                            <div class="border-t-4 border-lime pt-4 mt-4 flex justify-between font-bold">--%>
-<%--                                <span class="text-gray-800 text-xl">Total</span>--%>
-<%--                                <span class="text-lime text-3xl">150 DH</span>--%>
-<%--                            </div>--%>
-<%--                        </div>--%>
-<%--                    </div>--%>
                     <!-- Priorité de la consultation -->
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-3">
@@ -401,7 +413,8 @@
                             </svg>
                             Demander avis spécialiste
                         </button>
-                        <button type="submit" class="flex-1 px-8 py-5 bg-gradient-to-r from-ocean to-violet hover:from-ocean/90 hover:to-violet/90 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3">
+                        <button type="submit" onclick="document.querySelector('input[name=action]').value='closeConsultation'"  class="flex-1 px-8 py-5 bg-gradient-to-r from-ocean to-violet hover:from-ocean/90 hover:to-violet/90 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3">
+
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
@@ -594,12 +607,14 @@
     Créer une consultation
 </button>
 <script>
-    function openConsultation(firstName,lastName , ssn, dob, patientId,medicalRecordId  ) {
+    function openConsultation(queueId , firstName,lastName , ssn, dob, patientId,medicalRecordId  ) {
         document.getElementById('consultationForm').classList.remove('hidden');
         document.getElementById('patientName').textContent = firstName + lastName;
         document.getElementById('patientSSN').textContent = ssn;
         document.getElementById('patientDOB').textContent = dob;
         document.getElementById('medicalRecordId').value= medicalRecordId;
+        document.getElementById('queueId').value=queueId ;
+
 
         setTimeout(() => {
             document.getElementById('consultationForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -612,6 +627,7 @@
     }
 
     function showExpertiseModal() {
+        document.querySelector('input[name=action]').value='askExpertise';
         document.getElementById('expertiseModal').classList.remove('hidden');
     }
 

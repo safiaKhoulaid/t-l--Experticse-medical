@@ -2,12 +2,17 @@ package com.teleexpertise.app.application.service;
 
 import com.teleexpertise.app.domain.model.Consultation;
 import com.teleexpertise.app.domain.model.MedicalRecord;
+import com.teleexpertise.app.domain.model.enums.ConsultationStatus;
 import com.teleexpertise.app.domain.model.enums.Priority;
 import com.teleexpertise.app.domain.model.user.User;
 import com.teleexpertise.app.domain.repository.ConsultationRepository;
 import com.teleexpertise.app.domain.repository.RecordRepository;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.EnumUtils;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -28,7 +33,8 @@ public class ConsultationService {
                                            String observations,
                                            String diagnosis,
                                            String treatment,
-                                           String priorityStr) {
+                                           String priorityStr,
+                                           String status) {
         validateConsultationInput(medicalRecord, generalist, motif, priorityStr);
 
         Consultation consultation = new Consultation();
@@ -39,6 +45,7 @@ public class ConsultationService {
         consultation.setDiagnosis(diagnosis);
         consultation.setTreatment(treatment);
         consultation.setPriority(Priority.valueOf(priorityStr.toUpperCase()));
+        consultation.setStatus(ConsultationStatus.valueOf(status.toUpperCase()));
         consultation.setId(null);
         try {
             return consultationRepository.save(consultation).orElseThrow(
@@ -66,4 +73,7 @@ public class ConsultationService {
                 () -> new IllegalArgumentException("Dossier médical introuvable pour l'id: " + id)
         );
     }
+
+
+        // Implémentation de la méthode
 }

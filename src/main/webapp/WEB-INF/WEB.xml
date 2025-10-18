@@ -40,4 +40,15 @@
         <servlet-name>PatientServlet</servlet-name>
         <url-pattern>/patient</url-pattern>
     </servlet-mapping>
+    <!-- Déclaration explicite de la servlet -->
+    <servlet>
+        <servlet-name>ConsultationServlet</servlet-name>
+        <servlet-class>com.teleexpertise.app.presentation.servlet.ConsultationServlet</servlet-class>
+    </servlet>
+
+    <!-- Mapping explicite -->
+    <servlet-mapping>
+        <servlet-name>ConsultationServlet</servlet-name>
+        <url-pattern>/consultation</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -55,7 +55,7 @@ public class QueueRepositoryJpa implements QueueRepository {
     }
 
     @Override
-    public Optional<Queue> findById(Long id) {
+    public Optional<Queue> findById(String id) {
         EntityManager em = JpaUtil.getEntityManager();
         try {
             TypedQuery<Queue> query = em.createQuery(

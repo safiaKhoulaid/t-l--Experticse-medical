@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface QueueRepository {
     Optional<Queue> save(Queue queue);
-    Optional<Queue> findById(Long id);
+    Optional<Queue> findById(String id);
     List<Queue> findByStatus(QueueStatus status);
     List<Queue> findByStatusOrderByPriorityDescCreatedAtAsc(QueueStatus status);
     List<Queue> findAll();

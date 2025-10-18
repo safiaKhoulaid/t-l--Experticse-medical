@@ -67,19 +67,19 @@ public class QueueServlet extends HttpServlet {
         try {
             if (pathInfo.startsWith("/start/")) {
                 // Commencer une consultation
-                Long queueId = Long.parseLong(pathInfo.substring(7));
+                String queueId = pathInfo.substring(7).trim().toUpperCase();
                 Queue queue = queueService.startConsultation(queueId);
                 response.getWriter().write(gson.toJson(queue));
 
             } else if (pathInfo.startsWith("/complete/")) {
                 // Terminer une consultation
-                Long queueId = Long.parseLong(pathInfo.substring(10));
+                String queueId = pathInfo.substring(10).trim().toString();
                 Queue queue = queueService.completeConsultation(queueId);
                 response.getWriter().write(gson.toJson(queue));
 
             } else if (pathInfo.startsWith("/cancel/")) {
                 // Annuler une consultation
-                Long queueId = Long.parseLong(pathInfo.substring(8));
+              String queueId = pathInfo.substring(8).trim().toString();
                 String reason = request.getParameter("reason");
                 Queue queue = queueService.cancelConsultation(queueId, reason);
                 response.getWriter().write(gson.toJson(queue));

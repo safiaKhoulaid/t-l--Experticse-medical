@@ -21,11 +21,11 @@ public class QueueService {
      * Ajouter un patient à la file d'attente
      */
     public Queue addPatientToQueue(MedicalRecord medicalRecord, Priority priority) {
-        Queue queue = new Queue( medicalRecord, priority);
+        Queue queue = new Queue(medicalRecord, priority);
         queue.setEstimatedTime(calculateEstimatedTime());
         queue.setId(UUID.randomUUID().toString());
         Optional<Queue> res = queueRepository.save(queue);
-        if(res.isPresent()) {
+        if (res.isPresent()) {
             return res.get();
         }
         return null;
@@ -50,7 +50,7 @@ public class QueueService {
     /**
      * Commencer la consultation d'un patient
      */
-    public Queue startConsultation(Long queueId) {
+    public Queue startConsultation(String queueId) {
         Optional<Queue> queueOpt = queueRepository.findById(queueId);
         if (queueOpt.isPresent()) {
             Queue queue = queueOpt.get();
@@ -63,14 +63,14 @@ public class QueueService {
     /**
      * Terminer la consultation d'un patient
      */
-    public Queue completeConsultation(Long queueId) {
+    public Queue completeConsultation(String queueId) {
         Optional<Queue> queueOpt = queueRepository.findById(queueId);
         if (queueOpt.isPresent()) {
             Queue queue = queueOpt.get();
             queue.setStatus(QueueStatus.COMPLETED);
-            Optional <Queue> res = queueRepository.save(queue);
+            Optional<Queue> res = queueRepository.save(queue);
 
-            if(res.isPresent()) {
+            if (res.isPresent()) {
                 return res.get();
             }
 
@@ -83,20 +83,21 @@ public class QueueService {
     /**
      * Annuler une consultation
      */
-    public Queue cancelConsultation(Long queueId, String reason) {
+    public Queue cancelConsultation(String queueId, String reason) {
         Optional<Queue> queueOpt = queueRepository.findById(queueId);
         if (queueOpt.isPresent()) {
             Queue queue = queueOpt.get();
             queue.setStatus(QueueStatus.CANCELLED);
             queue.setNotes(reason);
-            Optional <Queue> res = queueRepository.save(queue);
+            Optional<Queue> res = queueRepository.save(queue);
 
-            if(res.isPresent()) {
+            if (res.isPresent()) {
                 return res.get();
             }
 
 
-            return null;        }
+            return null;
+        }
         throw new RuntimeException("Patient non trouvé dans la file d'attente");
     }
 
@@ -133,7 +134,7 @@ public class QueueService {
     /**
      * Mettre à jour la priorité d'un patient
      */
-    public Queue updatePriority(Long queueId, Priority priority) {
+    public Queue updatePriority(String  queueId, Priority priority) {
         Optional<Queue> queueOpt = queueRepository.findById(queueId);
         if (queueOpt.isPresent()) {
             Queue queue = queueOpt.get();
@@ -148,4 +149,17 @@ public class QueueService {
         }
 
         return null;
-    }}
+    }
+
+    public Queue getQueueById(String queueId) {
+        Optional<Queue> queueOpt = queueRepository.findById(queueId);
+        if (queueOpt.isPresent()) {
+            return queueOpt.get();
+        }
+        throw new RuntimeException("Patient non trouvé dans la file d'attente");
+    }
+
+    public void updateQueue(Queue queue) {
+        queueRepository.save(queue);
+    }
+}
