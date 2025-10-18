@@ -278,7 +278,6 @@
 
             <!-- Formulaire de consultation avec design moderne et lumineux -->
             <div id="consultationForm" class="bg-white rounded-3xl p-10 shadow-xl border-4 border-lavender hidden">
-            <div id="consultationForm" class="bg-white rounded-3xl p-10 shadow-xl border-4 border-lavender hidden">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-3xl font-bold flex items-center gap-4 text-gray-800">
                         <div class="w-12 h-12 bg-gradient-to-br from-violet to-pink rounded-xl flex items-center justify-center">
@@ -319,7 +318,7 @@
                         <input type="text" name ="motif" required class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all" placeholder="Ex: Douleurs thoraciques, Fièvre persistante...">
                     </div>
                     <input type="hidden"  name="action" value="">
-                    <input type="hidden" name="queueId" value="${queue.id}">
+                    <input type="hidden" id="queueId" name="queueId" value="${queue.id}">
                     <input type="hidden" id="medicalRecordId" name="medicalRecordId" >
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-3">Symptômes et observations</label>
@@ -579,27 +578,14 @@
                 <button type="button" onclick="closeExpertiseModal()" class="flex-1 px-8 py-5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-2xl font-bold text-lg transition-all duration-200">
                     Annuler
                 </button>
-                <button type="button" onclick="submitExpertise()" class="flex-1 px-8 py-5 bg-gradient-to-r from-ocean to-violet hover:from-ocean/90 hover:to-violet/90 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
+                <button type="submit" onclick="submitExpertise()" class="flex-1 px-8 py-5 bg-gradient-to-r from-ocean to-violet hover:from-ocean/90 hover:to-violet/90 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
                     Envoyer la demande
                 </button>
             </div>
         </div>
     </div>
 </div>
-<button onclick="openConsultation(
-        '${queue.medicalRecord.patient.firstName}',
-        '${queue.medicalRecord.patient.lastName}',
-        '${queue.medicalRecord.patient.numeroSs}',
-        '${queue.medicalRecord.patient.birthDate}',
-        '${queue.medicalRecord.patient.id}',
-        '${queue.medicalRecord.id}',
-        '${queue.medicalRecord.latestVitalSign.bloodPressureDiastolic}',
-        '${queue.medicalRecord.latestVitalSign.bloodPressureSystolic}',
-        '${queue.medicalRecord.latestVitalSign.temperature}',
-        '${queue.medicalRecord.latestVitalSign.respiratoryRate}',
-        '${queue.medicalRecord.weight}',
-        '${queue.medicalRecord.height}'
-        )"
+<button
         class="w-full px-8 py-5 bg-gradient-to-r from-violet to-pink hover:from-violet/90 hover:to-pink/90 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

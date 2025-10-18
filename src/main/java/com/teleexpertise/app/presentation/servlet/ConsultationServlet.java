@@ -1,3 +1,4 @@
+// java
 package com.teleexpertise.app.presentation.servlet;
 
 import com.teleexpertise.app.application.service.ConsultationService;
@@ -23,50 +24,52 @@ import java.io.IOException;
 @WebServlet(name = "ConsultationServlet", urlPatterns = {"/consultation"})
 public class ConsultationServlet extends HttpServlet {
 
-
     private ConsultationService consultationService = new ConsultationService(new ConsultationRepositoryJpa(), new MedicalRecordJpa());
     private UserService userService = new UserService(new UserRepositoryJpa());
     private QueueService queueService = new QueueService(new QueueRepositoryJpa());
 
+    private void setFlash(HttpServletRequest req, String message, String type) {
+        req.getSession().setAttribute("flashMessage", message);
+        req.getSession().setAttribute("flashType", type); // "success" ou "error"
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         try {
-            // Récupération des paramètres du formulaire
-            String medicalRecordId = request.getParameter("medicalRecordId").toString();
-            String generalistId = request.getParameter("generalistId").toString();
-            String motif = request.getParameter("motif");
-            String observations = request.getParameter("observations");
-            String diagnosis = request.getParameter("diagnosis");
-            String treatment = request.getParameter("treatment");
-            String priorityStr = request.getParameter("priority");
-            String queueId = request.getParameter("queueId");
-            long cout = Long.parseLong(request.getParameter("cout"));
-            String action = request.getParameter("action");
+            // Récupération défensive des paramètres
+            String medicalRecordId = safe(request.getParameter("medicalRecordId"));
+            String generalistId = safe(request.getParameter("generalistId"));
+            String motif = safe(request.getParameter("motif"));
+            String observations = safe(request.getParameter("observations"));
+            String diagnosis = safe(request.getParameter("diagnosis"));
+            String treatment = safe(request.getParameter("treatment"));
+            String priorityStr = safe(request.getParameter("priority"));
+            String queueId = safe(request.getParameter("queueId"));
+            String coutStr = safe(request.getParameter("cout"));
+            String action = safe(request.getParameter("action"));
 
-            System.out.println("Received consultation data: " +
-                    "medicalRecordId=" + medicalRecordId +
-                    ", generalistId=" + generalistId +
-                    ", motif=" + motif +
-                    ", observations=" + observations +
-                    ", diagnosis=" + diagnosis +
-                    ", treatment=" + treatment +
-                    ", priority=" + priorityStr +
-                    ", cout=" + cout);
+            long cout = 0L;
+            try { cout = Long.parseLong(coutStr); } catch (NumberFormatException ignored) {}
+
             String status = "Terminee";
 
-            // Récupération des objets (mock ou via repository/service)
+            // Récupération des objets métier
             MedicalRecord record = consultationService.getMedicalRecordById(medicalRecordId);
             User generalist = userService.getUserById(generalistId);
-            Queue queue = queueService.getQueueById(queueId);
-            queue.setStatus(QueueStatus.valueOf("COMPLETED"));
-            queueService.updateQueue(queue);
-            if (action.equals("askExpertise")) {
-                status = "EN_ATTENTE_AVIS_SPECIALISTE";
 
+            if (queueId != null && !queueId.isEmpty()) {
+                Queue queue = queueService.getQueueById(queueId);
+                if (queue != null) {
+                    queue.setStatus(QueueStatus.COMPLETED);
+                    queueService.updateQueue(queue);
+                }
             }
-            // Création de la consultation
+
+            if ("askExpertise".equals(action)) {
+                status = "EN_ATTENTE_AVIS_SPECIALISTE";
+            }
+
             Consultation consultation = consultationService.createConsultation(
                     record,
                     generalist,
@@ -78,27 +81,34 @@ public class ConsultationServlet extends HttpServlet {
                     status
             );
 
-            // Redirection vers JSP succès
-            request.setAttribute("consultation", consultation);
-            request.setAttribute("successMessage", "Consultation créée avec succès !");
-            if (action.equals("askExpertise")) {
+            // message flash
+            setFlash(request, "Consultation créée avec succès !", "success");
 
-                getServletContext().getRequestDispatcher("/request").forward(request, response);
-
-
+            // Si demande d'avis -> rediriger vers la route de requête (éviter double-forward)
+            if ("askExpertise".equals(action)) {
+                // Si vous devez fournir des paramètres à /requete, ajoutez-les à l'URL
+                response.sendRedirect(request.getContextPath() + "/requete");
+                return;
             }
-            getServletContext().getRequestDispatcher("/WEB-INF/dashboard-medecin.jsp").forward(request, response);
+
+            // redirection vers le dashboard (mapping existant)
+            response.sendRedirect(request.getContextPath() + "/dashboard-medecin");
+            return;
+
         } catch (Exception e) {
-            // Gestion des erreurs
-            request.setAttribute("errorMessage", e.getMessage());
-            getServletContext().getRequestDispatcher("/dashboard-medecin").forward(request, response);
+            setFlash(request, "Erreur lors du traitement : " + e.getMessage(), "error");
+            response.sendRedirect(request.getContextPath() + "/dashboard-medecin");
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Rediriger vers une page JSP pour créer une consultation
-        getServletContext().getRequestDispatcher("/dashboard-medecin").forward(request, response);
+        // rediriger vers la route /dashboard-medecin (assurée par une servlet ou JSP accessible)
+        response.sendRedirect(request.getContextPath() + "/dashboard-medecin");
+    }
+
+    private String safe(String s) {
+        return s == null ? "" : s;
     }
 }
