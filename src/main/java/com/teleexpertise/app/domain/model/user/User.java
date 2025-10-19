@@ -171,4 +171,5 @@ public class User {
     public void setConsultations(List<Consultation> consultations) {
         this.consultations = consultations;
     }
+
 }
