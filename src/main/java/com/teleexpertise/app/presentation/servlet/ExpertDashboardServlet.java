@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+@WebServlet("/dashboard-expert")
 public class ExpertDashboardServlet  extends HttpServlet {
 
     @Override
