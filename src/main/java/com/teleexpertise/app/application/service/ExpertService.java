@@ -18,6 +18,6 @@ public class ExpertService {
     }
 
     public List<User> findExpertsBySpecialty(String specialty) {
-        return expertRepository.findExpertsBySpecialty();
+        return expertRepository.findExpertsBySpecialty(specialty);
     }
 }

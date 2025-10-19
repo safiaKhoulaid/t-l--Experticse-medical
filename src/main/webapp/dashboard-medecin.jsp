@@ -265,7 +265,6 @@
                                     Créer une consultation
                                 </button>
 
-                                </button>
                             </div>
                         </c:forEach>
                     </c:if>
@@ -628,10 +627,10 @@
         const specialtyId = document.getElementById('specialtySelect').value;
         if (specialtyId) {
             // Récupérer la liste complète des spécialistes depuis la servlet
-            const specialists = ${not empty specialists ? specialists : '[]'};
+            const specialists = ${not empty expertes ? expertes : '[]'};
 
             // Filtrer les spécialistes selon la spécialité sélectionnée
-            const filteredSpecialists = specialists.filter(specialist =>
+            const filteredSpecialists = expertes.filter(specialist =>
                 specialist.specialtyId == specialtyId);
 
             // Vider le conteneur

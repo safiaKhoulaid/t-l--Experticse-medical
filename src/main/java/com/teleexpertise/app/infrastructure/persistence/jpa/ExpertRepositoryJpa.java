@@ -31,7 +31,7 @@ public class ExpertRepositoryJpa implements ExpertRepository {
     public List<User> findAllExperts() {
         EntityManager em = JpaUtil.getEntityManager();
         try{
-            var query = em.createQuery("SELECT u FROM User u WHERE u.role = 'EXPERT'", User.class);
+            var query = em.createQuery("SELECT u FROM User u WHERE u.role = 'DOCTOR_SPECIALIST'", User.class);
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
