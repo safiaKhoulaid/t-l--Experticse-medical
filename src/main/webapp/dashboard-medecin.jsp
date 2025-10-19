@@ -505,29 +505,18 @@
                 <label class="block text-sm font-bold text-gray-700 mb-3">Spécialité requise *</label>
                 <select id="specialtySelect" onchange="loadSpecialists()" class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-ocean/30 focus:border-ocean transition-all font-medium">
                     <option value="">Sélectionner une spécialité</option>
-                    <option value="cardiologue">Cardiologue</option>
-                    <option value="pneumologue">Pneumologue</option>
-                    <option value="dermatologue">Dermatologue</option>
-                    <option value="neurologue">Neurologue</option>
-                    <option value="endocrinologue">Endocrinologue</option>
+                    <c:if test="${not empty specialities}">
+                        <c:forEach var="specialty" items="${specialities}">
+                            <option value="${specialty.id}">${specialty.name}</option>
+                        </c:forEach>
+                    </c:if>
                 </select>
             </div>
 
             <div id="specialistsList" class="hidden">
                 <label class="block text-sm font-bold text-gray-700 mb-3">Spécialiste disponible</label>
-                <div class="space-y-4">
-                    <div class="bg-gradient-to-r from-sky to-white border-4 border-ocean rounded-2xl p-6 hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:scale-[1.02]">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="font-bold text-gray-800 text-xl">Dr. Marie Leclerc</p>
-                                <p class="text-sm text-gray-600 font-medium">Cardiologue - 15 ans d'expérience</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-ocean text-3xl">300 DH</p>
-                                <p class="text-xs text-gray-500 font-medium">par consultation</p>
-                            </div>
-                        </div>
-                    </div>
+                <div id="specialistsContainer" class="space-y-4">
+                    <!-- Les spécialistes seront chargés dynamiquement ici -->
                 </div>
             </div>
 
@@ -562,6 +551,8 @@
                     <option value="urgente">Urgente</option>
                     <option value="non_urgente">Non urgente</option>
                 </select>
+                <input type="hidden" id="selectedSpecialistId" name="specialistId" value="">
+
             </div>
 
             <div>
@@ -633,11 +624,65 @@
         alert('Demande d\'expertise envoyée avec succès!');
         closeExpertiseModal();
     }
+    function loadSpecialists() {
+        const specialtyId = document.getElementById('specialtySelect').value;
+        if (specialtyId) {
+            // Récupérer la liste complète des spécialistes depuis la servlet
+            const specialists = ${not empty specialists ? specialists : '[]'};
 
-    function logout() {
-        if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
-            window.location.href = 'login.html';
+            // Filtrer les spécialistes selon la spécialité sélectionnée
+            const filteredSpecialists = specialists.filter(specialist =>
+                specialist.specialtyId == specialtyId);
+
+            // Vider le conteneur
+            const container = document.getElementById('specialistsContainer');
+            container.innerHTML = '';
+
+            // Afficher les spécialistes filtrés
+            if (filteredSpecialists.length > 0) {
+                filteredSpecialists.forEach(specialist => {
+                    container.innerHTML += `
+                    <div class="bg-gradient-to-r from-sky to-white border-4 border-ocean rounded-2xl p-6 hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:scale-[1.02]"
+                         onclick="selectSpecialist('${specialist.id}', '${specialist.price}')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-bold text-gray-800 text-xl">Dr. ${specialist.firstName} ${specialist.lastName}</p>
+                                <p class="text-sm text-gray-600 font-medium">${specialist.specialtyName} - ${specialist.experience} ans d'expérience</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-ocean text-3xl">${specialist.price} DH</p>
+                                <p class="text-xs text-gray-500 font-medium">par consultation</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                });
+
+                document.getElementById('specialistsList').classList.remove('hidden');
+                document.getElementById('slotsSection').classList.remove('hidden');
+            } else {
+                container.innerHTML = '<p class="text-center text-gray-500">Aucun spécialiste disponible pour cette spécialité</p>';
+                document.getElementById('specialistsList').classList.remove('hidden');
+                document.getElementById('slotsSection').classList.add('hidden');
+            }
         }
+    }
+
+    function selectSpecialist(id, price) {
+        // Stocker l'ID du spécialiste sélectionné pour la demande
+        document.getElementById('selectedSpecialistId').value = id;
+
+        // Mettre à jour le coût dans le formulaire principal
+        document.getElementById('specialistCost').value = price;
+        calculateTotal();
+
+        // Mettre en évidence la sélection
+        const specialists = document.querySelectorAll('#specialistsContainer > div');
+        specialists.forEach(spec => {
+            spec.classList.remove('ring-4', 'ring-ocean');
+        });
+
+        event.currentTarget.classList.add('ring-4', 'ring-ocean');
     }
 </script>
 </body>

@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.EnumUtils;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -34,7 +35,8 @@ public class ConsultationService {
                                            String diagnosis,
                                            String treatment,
                                            String priorityStr,
-                                           String status) {
+                                           String status,
+                                           BigDecimal cost) {
         validateConsultationInput(medicalRecord, generalist, motif, priorityStr);
 
         Consultation consultation = new Consultation();
@@ -46,6 +48,7 @@ public class ConsultationService {
         consultation.setTreatment(treatment);
         consultation.setPriority(Priority.valueOf(priorityStr.toUpperCase()));
         consultation.setStatus(ConsultationStatus.valueOf(status.toUpperCase()));
+        consultation.setCost(cost);
         consultation.setId(null);
         try {
             return consultationRepository.save(consultation).orElseThrow(
@@ -75,5 +78,4 @@ public class ConsultationService {
     }
 
 
-        // Implémentation de la méthode
 }

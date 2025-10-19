@@ -62,6 +62,9 @@ public class User {
     @Column(name = "active")
     private Boolean active;
 
+    @Column(name = "tarif")
+    private Double tarif;
+
     @OneToMany(mappedBy = "generalist", cascade = CascadeType.ALL)
     private List<Consultation> consultations = new ArrayList<>();
 
@@ -153,4 +156,19 @@ public class User {
         this.active = active;
     }
 
+    public Double getTarif() {
+        return tarif;
+    }
+
+    public void setTarif(Double tarif) {
+        this.tarif = tarif;
+    }
+
+    public List<Consultation> getConsultations() {
+        return consultations;
+    }
+
+    public void setConsultations(List<Consultation> consultations) {
+        this.consultations = consultations;
+    }
 }

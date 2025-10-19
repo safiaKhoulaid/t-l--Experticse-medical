@@ -162,4 +162,15 @@ public class QueueService {
     public void updateQueue(Queue queue) {
         queueRepository.save(queue);
     }
+
+    public void closeQueue(String queueId) {
+        Optional<Queue> queueOpt = queueRepository.findById(queueId);
+        if (queueOpt.isPresent()) {
+            Queue queue = queueOpt.get();
+            queue.setStatus(QueueStatus.COMPLETED);
+            queueRepository.save(queue);
+        } else {
+            throw new RuntimeException("Patient non trouvé dans la file d'attente");
+        }
+    }
 }
